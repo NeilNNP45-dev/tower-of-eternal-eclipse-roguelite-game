@@ -50,7 +50,16 @@ class Mage(Character):
 class Archer(Character):
     def __init__(self, name):
         super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4)
-        
+
+def level_up(player):
+    player.player_level += 1
+    player.max_health += 20
+    player.health = player.max_health
+    player.normal_min += 2
+    player.normal_max += 2
+    player.strong_min += 5
+    player.strong_max += 5
+    print(f"{player.name} has leveled up to level {player.player_level}!")        
 
 def battle(player, enemy):
         while player.health > 0 :
@@ -72,7 +81,7 @@ def battle(player, enemy):
 
             if enemy.health <= 0:
                 print(f"{enemy.name} has been defeated! You win!")
-                break
+                return True
 
             enemy_action = random.choice(['normal', 'strong'])
             if enemy_action == 'strong' and not enemy.used_strong_last_turn == True:
@@ -84,6 +93,7 @@ def battle(player, enemy):
 
         if player.health <= 0:
           print(f"{player.name} has been defeated! Game Over!")
+          return False
 
 environments = {
     "The Forest of THE LOST ONES": {"Slime": 60, "Wolf": 100, "Bandits": 80},
@@ -120,7 +130,6 @@ bosses = {
 
 player_name = input("Enter your character's name: ")
 wins = 0
-player_level = 1
 exp = 0
 while True:      
         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
@@ -157,10 +166,11 @@ while True:
                                 strong_max=bosses[env][boss_name]["strong_max"],
                                 crit_chance=bosses[env][boss_name]["crit_chance"],
                                 crit_multiplier=bosses[env][boss_name]["crit_multiplier"])
-             battle(player, boss)
+             if not battle(player, boss):
+                 break
              exp += 100
              if exp >= 100:
-                 player.player_level += 1
+                 level_up(player)
                  exp -= 100
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
@@ -174,10 +184,11 @@ while True:
              print(f"\nThe Forgotten One leaves the field, but his shadow stays")
              print(f"\n---THE STRONGEST SHADOW BOSS FIGHT---")
              boss = Character("THE FORGOTTEN ONE(SHADOW FORM)", 500, 500, normal_min=50, normal_max=70, strong_min=100, strong_max=150, crit_chance=50, crit_multiplier=5)
-             battle(player, boss)
+             if not battle(player, boss):
+                 break
              exp += 100
              if exp >= 100:
-                 player.player_level += 1
+                 level_up(player)
                  exp -= 100
  
              print(f"\nYou rest and recover to full health.")
@@ -191,10 +202,11 @@ while True:
                 print(f"\nThe Forgotten One says: 'You have proven yourself worthy, but can you defeat me?'")
                 print(f"\n---THE FORGOTTEN ONE BOSS FIGHT---")
                 boss = Character("THE FORGOTTEN ONE", 1000, 1000, normal_min=70, normal_max=100, strong_min=150, strong_max=250, crit_chance=75, crit_multiplier=5)
-                battle(player, boss)
+                if not battle(player, boss):
+                    break
                 exp += 100
                 if exp >= 100:
-                    player.player_level += 1
+                    level_up(player)
                     exp -= 100
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
@@ -206,11 +218,12 @@ while True:
     enemy_name = random.choice(list(environments[env].keys()))
     enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], player_level = max(1, player.player_level + random.randint(-1, 1)))
     print(f"\nA wild level {enemy.player_level} {enemy.name} appears!")
-    battle(player, enemy)
+    if not battle(player, enemy):
+        break
 
     exp += 50
     if exp>=100:
-         player.player_level += 1
+         level_up(player)
          exp -= 100
     if player.health <= 0:
           break
