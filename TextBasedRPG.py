@@ -1,3 +1,6 @@
+#This file is now discontinued. I will be updating the code in the new folder.
+#This is file is here just to keep all the history of the project.
+
 import random
 class Character:
     def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2):
