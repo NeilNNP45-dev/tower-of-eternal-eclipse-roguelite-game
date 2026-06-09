@@ -45,7 +45,7 @@ class Knight(Character):
         
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=100, crit_multiplier=50)
+        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=5, crit_multiplier=5)
         
 class Archer(Character):
     def __init__(self, name):
@@ -204,7 +204,7 @@ while True:
      print(f"\n--- Battle {wins} ---")
     print(f"Current Level: {player.player_level} | EXP: {exp}/100")
     enemy_name = random.choice(list(environments[env].keys()))
-    enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], player_level = max(1, wins//5))
+    enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], player_level = max(1, player.player_level + random.randint(-1, 1)))
     print(f"\nA wild level {enemy.player_level} {enemy.name} appears!")
     battle(player, enemy)
 
