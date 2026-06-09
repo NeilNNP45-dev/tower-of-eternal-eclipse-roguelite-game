@@ -1,6 +1,6 @@
 import random
 class Character:
-    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, player_level = 1, enemy_level = 1):
+    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1):
         self.name = name
         self.health = health
         self.max_health = max_health
@@ -11,8 +11,7 @@ class Character:
         self.strong_max = strong_max
         self.crit_chance = crit_chance
         self.crit_multiplier = crit_multiplier
-        self.player_level = player_level
-        self.enemy_level = enemy_level
+        self.level = level
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
@@ -43,26 +42,34 @@ class Character:
         
 class Knight(Character):
      def __init__(self, name):
-        super().__init__(name, 120, 120, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, player_level=1)
+        super().__init__(name, 120, 120, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
         
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=100, crit_multiplier=50, player_level=1)
+        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=100, crit_multiplier=50, level=1)
         
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, player_level=1)
+        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
 
 def level_up(player):
-    player.player_level += 1
+    player.level += 1
     player.max_health += 20
     player.health = player.max_health
     player.normal_min += 2
     player.normal_max += 2
     player.strong_min += 5
     player.strong_max += 5
-    print(f"{player.name} has leveled up to level {player.player_level}!") 
+    print(f"{player.name} has leveled up to level {player.level}!") 
 
+def level_up(enemy):
+    enemy.level += 1
+    enemy.max_health = int(enemy.max_health + enemy.level* 10)
+    enemy.health = enemy.max_health
+    enemy.normal_min = int(enemy.normal_min + enemy.level * 0.5)
+    enemy.normal_max = int(enemy.normal_max + enemy.level * 1.5)
+    enemy.strong_min = int(enemy.strong_min + enemy.level * 0.5)
+    enemy.strong_max = int(enemy.strong_max + enemy.level * 1.5)
 
 def battle(player, enemy):
         while player.health > 0 :
@@ -160,7 +167,7 @@ while True:
         player.health += 30
     if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
              print(f"\n--- BOSS ROOM ---")
-             print(f"Current Level: {player.player_level} | EXP: {exp}/100")
+             print(f"Current Level: {player.level} | EXP: {exp}/100")
              print(f"\nA powerful boss appears!")
              boss = Character(boss_name, bosses[env][boss_name]
                               ["max_health"],
@@ -182,7 +189,7 @@ while True:
              continue           
     elif wins == 50:
              print(f"\n--- FINAL BOSS ---")
-             print(f"Current Level: {player.player_level} | EXP: {exp}/100")
+             print(f"Current Level: {player.level} | EXP: {exp}/100")
              print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
              print(f"\n THE FORGOTTEN ONE emerges from the shadows!") 
              print(f"\nThe Forgotten One says: 'You dare enter my domain? You arent good enough to fight me yet!'")
@@ -201,7 +208,7 @@ while True:
              continue           
     elif wins == 100:
                 print(f"\n--- FINAL BOSS ---")
-                print(f"Current Level: {player.player_level} | EXP: {exp}/100")
+                print(f"Current Level: {player.level} | EXP: {exp}/100")
                 print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
                 print(f"\n THE FORGOTTEN ONE emerges from the shadows!")
                 print(f"\nThe Forgotten One says: 'You have proven yourself worthy, but can you defeat me?'")
@@ -219,11 +226,11 @@ while True:
     else:               
     
      print(f"\n--- Battle {wins} ---")
-    print(f"Current Level: {player.player_level} | EXP: {exp}/100")
+    print(f"Current Level: {player.level} | EXP: {exp}/100")
     enemy_name = random.choice(list(environments[env].keys()))
-    enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], enemy_level = max(1, player.player_level + random.randint(-1, 1)))
-   
-    print(f"\nA wild level {enemy.enemy_level} {enemy.name} appears!")
+    enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, player.level + random.randint(-1, 1)))
+    level_up(enemy)
+    print(f"\nA wild level {enemy.level} {enemy.name} appears!")
     if not battle(player, enemy):
         break
 
