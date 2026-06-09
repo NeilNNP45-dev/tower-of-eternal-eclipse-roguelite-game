@@ -46,7 +46,7 @@ class Knight(Character):
         
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=100, crit_multiplier=50, level=1)
+        super().__init__(name, 20, 20, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
         
 class Archer(Character):
     def __init__(self, name):
@@ -141,7 +141,11 @@ bosses = {
 player_name = input("Enter your character's name: ")
 wins = 0
 exp = 0
-while True:      
+while True:
+ choices = input("Press A to Enter the Tower of Eternal Eclipse, Press Q to Quit): ")
+ if choices.lower() == 'a':           
+              
+     while True:      
         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
         if classes == '1':
             player = Knight(player_name)
@@ -156,16 +160,16 @@ while True:
             print("Invalid class choice. Please choose again.")
            
 
-while True:
-    wins += 1
-    if wins > 1:
+     while True:
+      wins += 1
+      if wins > 1:
         env = random.choice(list(environments.keys()))
         boss_name = random.choice(list(bosses[env].keys()))
         print(f"\nYou travel to the {env}.")
-    if player.health < 50:
+      if player.health < 50:
         print(f"\nYou take a moment to rest and recover some health.")
         player.health += 30
-    if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
+      if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
              print(f"\n--- BOSS ROOM ---")
              print(f"Current Level: {player.level} | EXP: {exp}/100")
              print(f"\nA powerful boss appears!")
@@ -187,7 +191,7 @@ while True:
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
-    elif wins == 50:
+      elif wins == 50:
              print(f"\n--- FINAL BOSS ---")
              print(f"Current Level: {player.level} | EXP: {exp}/100")
              print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
@@ -206,7 +210,7 @@ while True:
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
-    elif wins == 100:
+      elif wins == 100:
                 print(f"\n--- FINAL BOSS ---")
                 print(f"Current Level: {player.level} | EXP: {exp}/100")
                 print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
@@ -223,22 +227,29 @@ while True:
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
-    else:               
+      else:               
     
-     print(f"\n--- Battle {wins} ---")
-    print(f"Current Level: {player.level} | EXP: {exp}/100")
-    enemy_name = random.choice(list(environments[env].keys()))
-    enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, player.level + random.randint(-1, 1)))
-    level_up(enemy)
-    print(f"\nA wild level {enemy.level} {enemy.name} appears!")
-    if not battle(player, enemy):
-        break
+        print(f"\n--- Battle {wins} ---")
+        print(f"Current Level: {player.level} | EXP: {exp}/100")
+        enemy_name = random.choice(list(environments[env].keys()))
+        enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, player.level + random.randint(-1, 1)))
+        level_up(enemy)
+        print(f"\nA wild level {enemy.level} {enemy.name} appears!")
+        if not battle(player, enemy):
+         break
 
-    exp += 50
-    if exp >= 100:
+        exp += 50
+        if exp >= 100:
             level_up(player)
             exp -= 100
             
-    if player.health <= 0:
+        if player.health <= 0:
           break
+
+ elif choices.lower() == 'q':
+        print("Thanks for playing!")
+        break
+ else:
+        print("Invalid choice. Please choose again.")
+        continue
    
