@@ -54,8 +54,12 @@ class Archer(Character):
 
 def playerlevel_up(player):
     global saved_levels
+    global saved_exp_needed
+    global saved_exp 
     player.level += 1
     saved_levels= player.level - 1
+    saved_exp_needed = exp_needed
+    saved_exp = exp
     if isinstance(player, Knight):
        player.max_health += 30
        player.health = player.max_health
@@ -86,12 +90,12 @@ def playerlevel_up(player):
 
 def enemylevel_up(enemy):
     enemy.level += 1
-    enemy.max_health = int(enemy.max_health + enemy.level* 10)
+    enemy.max_health = int(enemy.max_health + wins* 10)
     enemy.health = enemy.max_health
-    enemy.normal_min = int(enemy.normal_min + enemy.level * 0.5)
-    enemy.normal_max = int(enemy.normal_max + enemy.level * 1.5)
-    enemy.strong_min = int(enemy.strong_min + enemy.level * 0.5)
-    enemy.strong_max = int(enemy.strong_max + enemy.level * 1.5)
+    enemy.normal_min = int(enemy.normal_min + wins * 0.5)
+    enemy.normal_max = int(enemy.normal_max + wins * 1.5)
+    enemy.strong_min = int(enemy.strong_min + wins * 0.5)
+    enemy.strong_max = int(enemy.strong_max + wins * 1.5)
 
 def battle(player, enemy):
         while player.health > 0 :
@@ -162,12 +166,14 @@ bosses = {
 
 player_name = input("Enter your character's name: ")
 saved_levels = 0
+saved_exp = 0
+saved_exp_needed = 100
 while True:
  choices = input("Press A to Enter the Tower of Eternal Eclipse, Press Q to Quit): ")
  if choices.lower() == 'a':    
       wins = 0         
-      exp =  0
-      exp_needed = 100          
+      exp =  saved_exp
+      exp_needed = saved_exp_needed         
       while True:      
         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
         if classes == '1':
@@ -219,6 +225,8 @@ while True:
                  playerlevel_up(player)
                  exp -= exp_needed
                  exp_needed = int(exp_needed*1.5)
+                 saved_exp_needed = exp_needed
+                 saved_exp = exp
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
@@ -238,6 +246,8 @@ while True:
                  playerlevel_up(player)
                  exp -= exp_needed
                  exp_needed = int(exp_needed*1.5)
+                 saved_exp_needed = exp_needed
+                 saved_exp = exp
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
@@ -256,6 +266,8 @@ while True:
                     playerlevel_up(player)
                     exp -= exp_needed
                     exp_needed = int(exp_needed*1.5)
+                    saved_exp_needed = exp_needed
+                    saved_exp = exp
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
@@ -264,7 +276,7 @@ while True:
         print(f"\n--- Battle {wins} ---")
         print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
         enemy_name = random.choice(list(environments[env].keys()))
-        enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, player.level + random.randint(-1, 1)))
+        enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, wins + random.randint(-1, 1)))
         enemylevel_up(enemy)
         print(f"\nA wild level {enemy.level} {enemy.name} appears!")
         if not battle(player, enemy):
@@ -275,6 +287,8 @@ while True:
             playerlevel_up(player)
             exp -= exp_needed
             exp_needed = int(exp_needed*1.5)
+            saved_exp_needed = exp_needed
+            saved_exp = exp
             
         if player.health <= 0:
           break
