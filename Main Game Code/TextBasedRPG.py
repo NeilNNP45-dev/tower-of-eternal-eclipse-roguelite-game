@@ -53,13 +53,9 @@ class Archer(Character):
         super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
 
 def playerlevel_up(player):
-    global saved_levels
-    global saved_exp_needed
-    global saved_exp 
+    global saved_levels 
     player.level += 1
     saved_levels= player.level - 1
-    saved_exp_needed = exp_needed
-    saved_exp = exp
     if isinstance(player, Knight):
        player.max_health += 30
        player.health = player.max_health
@@ -180,7 +176,7 @@ while True:
             player = Knight(player_name)
             for i in range(saved_levels):
              playerlevel_up(player)    
-             break
+            break
         elif classes == '2':
             player = Mage(player_name)
             for i in range(saved_levels):
@@ -219,14 +215,15 @@ while True:
                                 crit_chance=bosses[env][boss_name]["crit_chance"],
                                 crit_multiplier=bosses[env][boss_name]["crit_multiplier"])
              if not battle(player, boss):
+                 saved_exp_needed = exp_needed
+                 saved_exp = exp
                  break
              exp += 500
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
                  exp_needed = int(exp_needed*1.5)
-                 saved_exp_needed = exp_needed
-                 saved_exp = exp
+                
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
@@ -240,14 +237,15 @@ while True:
              print(f"\n---THE STRONGEST SHADOW BOSS FIGHT---")
              boss = Character("THE FORGOTTEN ONE(SHADOW FORM)", 500, 500, normal_min=50, normal_max=70, strong_min=100, strong_max=150, crit_chance=50, crit_multiplier=5)
              if not battle(player, boss):
+                 saved_exp_needed = exp_needed
+                 saved_exp = exp
                  break
              exp += 1000
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
                  exp_needed = int(exp_needed*1.5)
-                 saved_exp_needed = exp_needed
-                 saved_exp = exp
+                 
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
@@ -260,14 +258,14 @@ while True:
                 print(f"\n---THE FORGOTTEN ONE BOSS FIGHT---")
                 boss = Character("THE FORGOTTEN ONE", 1000, 1000, normal_min=70, normal_max=100, strong_min=150, strong_max=250, crit_chance=75, crit_multiplier=5)
                 if not battle(player, boss):
+                 saved_exp_needed = exp_needed
+                 saved_exp = exp
                  break
                 exp += 2500
                 while exp >= exp_needed:
                     playerlevel_up(player)
                     exp -= exp_needed
                     exp_needed = int(exp_needed*1.5)
-                    saved_exp_needed = exp_needed
-                    saved_exp = exp
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
@@ -280,6 +278,8 @@ while True:
         enemylevel_up(enemy)
         print(f"\nA wild level {enemy.level} {enemy.name} appears!")
         if not battle(player, enemy):
+         saved_exp_needed = exp_needed
+         saved_exp = exp
          break
 
         exp += 100
@@ -287,10 +287,10 @@ while True:
             playerlevel_up(player)
             exp -= exp_needed
             exp_needed = int(exp_needed*1.5)
-            saved_exp_needed = exp_needed
-            saved_exp = exp
             
         if player.health <= 0:
+          saved_exp_needed = exp_needed
+          saved_exp = exp
           break
 
  elif choices.lower() == 'q':
