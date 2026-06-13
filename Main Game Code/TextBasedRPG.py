@@ -15,7 +15,7 @@ class Character:
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
-        crit = random.randint(1, 100)
+        crit = random.uniform(1, 100)
         if crit <= self.crit_chance:
             damage *= self.crit_multiplier
             print(f"Critical hit!")
@@ -28,7 +28,7 @@ class Character:
             print(f"{self.name} cannot use strong attack this turn!")
             return False
         damage = random.randint(self.strong_min, self.strong_max)
-        crit = random.randint(1, 100)
+        crit = random.uniform(1, 100)
         if crit <= self.crit_chance:
             damage *= self.crit_multiplier
             print(f"Critical hit!")
@@ -56,12 +56,32 @@ def playerlevel_up(player):
     global saved_levels
     player.level += 1
     saved_levels= player.level - 1
-    player.max_health += 5
-    player.health = player.max_health
-    player.normal_min += 2
-    player.normal_max += 2
-    player.strong_min += 5
-    player.strong_max += 5
+    if isinstance(player, Knight):
+       player.max_health += 30
+       player.health = player.max_health
+       player.normal_min += 1
+       player.normal_max += 1
+       player.strong_min += 3
+       player.strong_max += 3
+    elif isinstance(player, Mage):
+       player.max_health += 10
+       player.health = player.max_health
+       player.normal_min += 3
+       player.normal_max += 3
+       player.strong_min += 7
+       player.strong_max += 7
+
+    elif isinstance(player, Archer):
+       player.max_health += 20
+       player.health = player.max_health
+       player.normal_min += 2
+       player.normal_max += 2
+       player.strong_min += 4
+       player.strong_max += 4
+       player.crit_chance += 0.5
+       player.crit_chance = min(player.crit_chance, 75)
+       
+
     print(f"{player.name} has leveled up to level {player.level}!") 
 
 def enemylevel_up(enemy):
@@ -152,19 +172,16 @@ while True:
         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
         if classes == '1':
             player = Knight(player_name)
-            print(saved_levels)
             for i in range(saved_levels):
              playerlevel_up(player)    
              break
         elif classes == '2':
             player = Mage(player_name)
-            print(saved_levels)
             for i in range(saved_levels):
              playerlevel_up(player)
             break
         elif classes == '3':
             player = Archer(player_name)
-            print(saved_levels)
             for i in range(saved_levels):
              playerlevel_up(player)
             break
