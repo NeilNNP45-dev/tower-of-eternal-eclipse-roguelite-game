@@ -46,15 +46,17 @@ class Knight(Character):
         
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 20, 20, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
+        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
         
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
+        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=100, crit_multiplier=4, level=1)
 
 def playerlevel_up(player):
+    global saved_levels
     player.level += 1
-    player.max_health += 20
+    saved_levels += 1
+    player.max_health += 5
     player.health = player.max_health
     player.normal_min += 2
     player.normal_max += 2
@@ -139,26 +141,36 @@ bosses = {
 
 
 player_name = input("Enter your character's name: ")
-
-
+saved_levels = 0
 while True:
  choices = input("Press A to Enter the Tower of Eternal Eclipse, Press Q to Quit): ")
  if choices.lower() == 'a':    
       wins = 0         
-      exp =  0          
+      exp =  0
+      exp_needed = 100          
       while True:      
         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
         if classes == '1':
             player = Knight(player_name)
-            break
+            print(saved_levels)
+            for i in range(saved_levels):
+             playerlevel_up(player)    
+             break
         elif classes == '2':
             player = Mage(player_name)
+            print(saved_levels)
+            for i in range(saved_levels):
+             playerlevel_up(player)
             break
         elif classes == '3':
             player = Archer(player_name)
+            print(saved_levels)
+            for i in range(saved_levels):
+             playerlevel_up(player)
             break
         else:
             print("Invalid class choice. Please choose again.")
+        
            
 
       while True:
@@ -172,7 +184,7 @@ while True:
         player.health += 30
        if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
              print(f"\n--- BOSS ROOM ---")
-             print(f"Current Level: {player.level} | EXP: {exp}/100")
+             print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
              print(f"\nA powerful boss appears!")
              boss = Character(boss_name, bosses[env][boss_name]
                               ["max_health"],
@@ -185,16 +197,17 @@ while True:
                                 crit_multiplier=bosses[env][boss_name]["crit_multiplier"])
              if not battle(player, boss):
                  break
-             exp += 100
-             if exp >= 100:
+             exp += 500
+             while exp >= exp_needed:
                  playerlevel_up(player)
-                 exp -= 100
+                 exp -= exp_needed
+                 exp_needed = int(exp_needed*1.5)
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
        elif wins == 50:
              print(f"\n--- FINAL BOSS ---")
-             print(f"Current Level: {player.level} | EXP: {exp}/100")
+             print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
              print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
              print(f"\n THE FORGOTTEN ONE emerges from the shadows!") 
              print(f"\nThe Forgotten One says: 'You dare enter my domain? You arent good enough to fight me yet!'")
@@ -203,35 +216,36 @@ while True:
              boss = Character("THE FORGOTTEN ONE(SHADOW FORM)", 500, 500, normal_min=50, normal_max=70, strong_min=100, strong_max=150, crit_chance=50, crit_multiplier=5)
              if not battle(player, boss):
                  break
-             exp += 100
-             if exp >= 100:
+             exp += 1000
+             while exp >= exp_needed:
                  playerlevel_up(player)
-                 exp -= 100
- 
+                 exp -= exp_needed
+                 exp_needed = int(exp_needed*1.5)
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
        elif wins == 100:
                 print(f"\n--- FINAL BOSS ---")
-                print(f"Current Level: {player.level} | EXP: {exp}/100")
+                print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
                 print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
                 print(f"\n THE FORGOTTEN ONE emerges from the shadows!")
                 print(f"\nThe Forgotten One says: 'You have proven yourself worthy, but can you defeat me?'")
                 print(f"\n---THE FORGOTTEN ONE BOSS FIGHT---")
                 boss = Character("THE FORGOTTEN ONE", 1000, 1000, normal_min=70, normal_max=100, strong_min=150, strong_max=250, crit_chance=75, crit_multiplier=5)
                 if not battle(player, boss):
-                    break
-                exp += 100
-                if exp >= 100:
+                 break
+                exp += 2500
+                while exp >= exp_needed:
                     playerlevel_up(player)
-                    exp -= 100
+                    exp -= exp_needed
+                    exp_needed = int(exp_needed*1.5)
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
        else:               
     
         print(f"\n--- Battle {wins} ---")
-        print(f"Current Level: {player.level} | EXP: {exp}/100")
+        print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
         enemy_name = random.choice(list(environments[env].keys()))
         enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, player.level + random.randint(-1, 1)))
         enemylevel_up(enemy)
@@ -239,10 +253,11 @@ while True:
         if not battle(player, enemy):
          break
 
-        exp += 50
-        if exp >= 100:
+        exp += 100
+        while exp >= exp_needed:
             playerlevel_up(player)
-            exp -= 100
+            exp -= exp_needed
+            exp_needed = int(exp_needed*1.5)
             
         if player.health <= 0:
           break
