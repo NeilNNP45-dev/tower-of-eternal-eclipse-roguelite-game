@@ -50,12 +50,12 @@ class Mage(Character):
         
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=100, crit_multiplier=4, level=1)
+        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
 
 def playerlevel_up(player):
     global saved_levels
     player.level += 1
-    saved_levels += 1
+    saved_levels= player.level - 1
     player.max_health += 5
     player.health = player.max_health
     player.normal_min += 2
