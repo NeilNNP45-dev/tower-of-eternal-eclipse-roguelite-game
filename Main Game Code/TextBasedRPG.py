@@ -52,7 +52,7 @@ class Archer(Character):
     def __init__(self, name):
         super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
 
-def level_up(player):
+def playerlevel_up(player):
     player.level += 1
     player.max_health += 20
     player.health = player.max_health
@@ -62,7 +62,7 @@ def level_up(player):
     player.strong_max += 5
     print(f"{player.name} has leveled up to level {player.level}!") 
 
-def level_up(enemy):
+def enemylevel_up(enemy):
     enemy.level += 1
     enemy.max_health = int(enemy.max_health + enemy.level* 10)
     enemy.health = enemy.max_health
@@ -139,13 +139,14 @@ bosses = {
 
 
 player_name = input("Enter your character's name: ")
-wins = 0
-exp = 0
+
+
 while True:
  choices = input("Press A to Enter the Tower of Eternal Eclipse, Press Q to Quit): ")
- if choices.lower() == 'a':           
-              
-     while True:      
+ if choices.lower() == 'a':    
+      wins = 0         
+      exp =  0          
+      while True:      
         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
         if classes == '1':
             player = Knight(player_name)
@@ -160,16 +161,16 @@ while True:
             print("Invalid class choice. Please choose again.")
            
 
-     while True:
-      wins += 1
-      if wins > 1:
+      while True:
+       wins += 1
+       if wins > 1:
         env = random.choice(list(environments.keys()))
         boss_name = random.choice(list(bosses[env].keys()))
         print(f"\nYou travel to the {env}.")
-      if player.health < 50:
+       if player.health < 50:
         print(f"\nYou take a moment to rest and recover some health.")
         player.health += 30
-      if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
+       if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
              print(f"\n--- BOSS ROOM ---")
              print(f"Current Level: {player.level} | EXP: {exp}/100")
              print(f"\nA powerful boss appears!")
@@ -186,12 +187,12 @@ while True:
                  break
              exp += 100
              if exp >= 100:
-                 level_up(player)
+                 playerlevel_up(player)
                  exp -= 100
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
-      elif wins == 50:
+       elif wins == 50:
              print(f"\n--- FINAL BOSS ---")
              print(f"Current Level: {player.level} | EXP: {exp}/100")
              print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
@@ -204,13 +205,13 @@ while True:
                  break
              exp += 100
              if exp >= 100:
-                 level_up(player)
+                 playerlevel_up(player)
                  exp -= 100
  
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
-      elif wins == 100:
+       elif wins == 100:
                 print(f"\n--- FINAL BOSS ---")
                 print(f"Current Level: {player.level} | EXP: {exp}/100")
                 print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
@@ -222,25 +223,25 @@ while True:
                     break
                 exp += 100
                 if exp >= 100:
-                    level_up(player)
+                    playerlevel_up(player)
                     exp -= 100
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
-      else:               
+       else:               
     
         print(f"\n--- Battle {wins} ---")
         print(f"Current Level: {player.level} | EXP: {exp}/100")
         enemy_name = random.choice(list(environments[env].keys()))
         enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, player.level + random.randint(-1, 1)))
-        level_up(enemy)
+        enemylevel_up(enemy)
         print(f"\nA wild level {enemy.level} {enemy.name} appears!")
         if not battle(player, enemy):
          break
 
         exp += 50
         if exp >= 100:
-            level_up(player)
+            playerlevel_up(player)
             exp -= 100
             
         if player.health <= 0:
