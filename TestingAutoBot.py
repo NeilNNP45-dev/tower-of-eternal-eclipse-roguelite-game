@@ -1,4 +1,4 @@
-BOT_CLASS = "Mage"
+BOT_CLASS = "Knight"
 import random
 class Character:
     def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1):
@@ -38,11 +38,11 @@ class Character:
     
 class Knight(Character):
      def __init__(self, name):
-        super().__init__(name, 120, 120, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
+        super().__init__(name, 140, 140, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
         
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
+        super().__init__(name, 100, 100, normal_min=10, normal_max=15, strong_min=25, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
         
 class Archer(Character):
     def __init__(self, name):
@@ -55,12 +55,12 @@ def playerlevel_up(player):
     if isinstance(player, Knight):
        player.max_health += 30
        player.health = player.max_health
-       player.normal_min += 1
-       player.normal_max += 1
-       player.strong_min += 3
-       player.strong_max += 3
+       player.normal_min += 2
+       player.normal_max += 2
+       player.strong_min += 5
+       player.strong_max += 5
     elif isinstance(player, Mage):
-       player.max_health += 10
+       player.max_health += 25
        player.health = player.max_health
        player.normal_min += 3
        player.normal_max += 3
