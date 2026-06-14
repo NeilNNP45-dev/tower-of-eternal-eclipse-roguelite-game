@@ -164,6 +164,8 @@ player_name = input("Enter your character's name: ")
 saved_levels = 0
 saved_exp = 0
 saved_exp_needed = 100
+resets = 0
+print(resets)
 while True:
  choices = input("Press A to Enter the Tower of Eternal Eclipse, Press Q to Quit): ")
  if choices.lower() == 'a':    
@@ -217,8 +219,9 @@ while True:
              if not battle(player, boss):
                  saved_exp_needed = exp_needed
                  saved_exp = exp
+                 resets += 1
                  break
-             exp += 500
+             exp += random.randint(400 + resets*5 , 600 + resets*5)
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
@@ -239,8 +242,9 @@ while True:
              if not battle(player, boss):
                  saved_exp_needed = exp_needed
                  saved_exp = exp
+                 resets += 1
                  break
-             exp += 1000
+             exp += random.randint(1000 + resets*5 , 1500 + resets*5)
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
@@ -260,8 +264,9 @@ while True:
                 if not battle(player, boss):
                  saved_exp_needed = exp_needed
                  saved_exp = exp
+                 resets += 1
                  break
-                exp += 2500
+                exp += random.randint(2500 + resets*5 , 3000 + resets*5)
                 while exp >= exp_needed:
                     playerlevel_up(player)
                     exp -= exp_needed
@@ -280,9 +285,10 @@ while True:
         if not battle(player, enemy):
          saved_exp_needed = exp_needed
          saved_exp = exp
+         resets += 1
          break
 
-        exp += 100
+        exp += random.randint(75 + resets*5 , 150 + resets*5)
         while exp >= exp_needed:
             playerlevel_up(player)
             exp -= exp_needed
