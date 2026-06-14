@@ -93,6 +93,22 @@ def enemylevel_up(enemy):
     enemy.strong_min = int(enemy.strong_min + wins * 0.5)
     enemy.strong_max = int(enemy.strong_max + wins * 1.5)
 
+def bosslevel_up(boss):
+    if boss.name == "THE LOST PROTECTOR":
+       boss.max_health += resets*25 + wins*2
+       boss.health = boss.max_health
+       boss.strong_min -= resets*2 
+       boss.strong_max -= resets*2 
+
+    elif boss.name == "THE LICH KING":
+       boss.max_health += resets*15 + wins
+       boss.health = boss.max_health
+    
+    elif boss.name == "THE HOLLOW HUMAN":
+       boss.max_health += resets*20 + wins*2
+       boss.health = boss.max_health
+       
+
 def battle(player, enemy):
         while player.health > 0 :
             print(f"\n{player.name}'s Health: {player.health} | {enemy.name}'s Health: {enemy.health}")
@@ -136,25 +152,25 @@ environments = {
 env = random.choice(list(environments.keys()))
 print(f"You find yourself in a {env}.")
 bosses = {
-    "The Forest of THE LOST ONES": {"THE LOST PROTECTOR": {"max_health": 350, 
+    "The Forest of THE LOST ONES": {"THE LOST PROTECTOR": {"max_health": 300, 
                                                       "normal_min": 30,
                                                       "normal_max": 50, 
                                                       "strong_min": -30, 
                                                       "strong_max": -10,
                                                       "crit_chance": 1,
                                                       "crit_multiplier": 2}},
-    "The Dungeon of THE DEAD": {"THE LICH KING": {"max_health": 250,
+    "The Dungeon of THE DEAD": {"THE LICH KING": {"max_health": 200,
                                                   "normal_min": 15,
                                                   "normal_max": 25,
-                                                  "strong_min": 75,
+                                                  "strong_min": 50,
                                                   "strong_max": 100,
                                                   "crit_chance": 0,
                                                   "crit_multiplier": 3.5}},
-    "The Cave of THE HOLLOWS": {"THE HOLLOW HUMAN": {"max_health": 300,
+    "The Cave of THE HOLLOWS": {"THE HOLLOW HUMAN": {"max_health": 250,
                                                      "normal_min": 0, 
                                                      "normal_max": 0, 
-                                                     "strong_min": 10, 
-                                                     "strong_max": 15, 
+                                                     "strong_min": 6, 
+                                                     "strong_max": 10, 
                                                      "crit_chance": 100, 
                                                      "crit_multiplier": 10}}
 }
@@ -205,6 +221,8 @@ while True:
         player.health += 30
        if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
              print(f"\n--- BOSS ROOM ---")
+             print("You Rest Before Going in and Heal to Max")
+             player.health = player.max_health
              print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
              print(f"\nA powerful boss appears!")
              boss = Character(boss_name, bosses[env][boss_name]
@@ -216,6 +234,7 @@ while True:
                                 strong_max=bosses[env][boss_name]["strong_max"],
                                 crit_chance=bosses[env][boss_name]["crit_chance"],
                                 crit_multiplier=bosses[env][boss_name]["crit_multiplier"])
+             bosslevel_up(boss)
              if not battle(player, boss):
                  saved_exp_needed = exp_needed
                  saved_exp = exp
@@ -225,13 +244,15 @@ while True:
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
-                 exp_needed = int(exp_needed*1.5)
+                 exp_needed = int(exp_needed*1.3)
                 
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
        elif wins == 50:
              print(f"\n--- FINAL BOSS ---")
+             print("You Rest Before Going in and Heal to Max")
+             player.health = player.max_health
              print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
              print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
              print(f"\n THE FORGOTTEN ONE emerges from the shadows!") 
@@ -248,13 +269,15 @@ while True:
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
-                 exp_needed = int(exp_needed*1.5)
+                 exp_needed = int(exp_needed*1.3)
                  
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
        elif wins == 100:
                 print(f"\n--- FINAL BOSS ---")
+                print("You Rest Before Going in and Heal to Max")
+                player.health = player.max_health
                 print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
                 print(f"\nThe Air Chills Around the Field as Something....SOMEONE POWERFUL Appears!")
                 print(f"\n THE FORGOTTEN ONE emerges from the shadows!")
@@ -270,7 +293,7 @@ while True:
                 while exp >= exp_needed:
                     playerlevel_up(player)
                     exp -= exp_needed
-                    exp_needed = int(exp_needed*1.5)
+                    exp_needed = int(exp_needed*1.3)
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
@@ -288,11 +311,11 @@ while True:
          resets += 1
          break
 
-        exp += random.randint(75 + resets*5 , 150 + resets*5)
+        exp += random.randint(100 + resets*5 , 150 + resets*5)
         while exp >= exp_needed:
             playerlevel_up(player)
             exp -= exp_needed
-            exp_needed = int(exp_needed*1.5)
+            exp_needed = int(exp_needed*1.3)
             
         if player.health <= 0:
           saved_exp_needed = exp_needed
