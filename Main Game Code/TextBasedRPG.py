@@ -1,6 +1,6 @@
 import random
 class Character:
-    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0):
+    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0, special_attack_cooldown_turn = 0, accuracy = 100):
         self.name = name
         self.health = health
         self.max_health = max_health
@@ -13,7 +13,8 @@ class Character:
         self.level = level
         self.strong_attack_cooldown = strong_attack_cooldown
         self.special_attack_cooldown = special_attack_cooldown
-
+        self.special_attack_cooldown_turn = special_attack_cooldown_turn
+        self.accuracy = accuracy
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
@@ -42,17 +43,58 @@ class Character:
         return True
         
 class Knight(Character):
-     def __init__(self, name):
-        super().__init__(name, 140, 140, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
-        
+    def __init__(self, name):
+        super().__init__(name, 140, 140, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1, special_attack_cooldown = 5, special_attack_cooldown_turn = 5, accuracy = 100)
+    def special_attack(self, target):
+        if self.special_attack_cooldown>0:
+            print(f"{self.name} cannot use Protector's Honour for {self.special_attack_cooldown} turns!")
+            return False
+        damage = random.randint(self.strong_min + 15, self.strong_max + 15)
+        target.health -= damage
+        self.health += 25
+        self.health = min(self.health, self.max_health)
+        print(f"{self.name} uses Protector's Honour")
+        print(f"{target.name} takes {damage} damage!")
+        print(f"{self.name} also heals by 25 HP")
+        return True  
+            
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 100, 100, normal_min=10, normal_max=15, strong_min=25, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
-        
+        super().__init__(name, 100, 100, normal_min=10, normal_max=15, strong_min=25, strong_max=35, crit_chance=5, crit_multiplier=5, level=1, special_attack_cooldown = 5, special_attack_cooldown_turn = 10, accuracy = 100)
+    def special_attack(self, target):
+        if self.special_attack_cooldown>0:
+            print(f"{self.name} cannot use Lich's Greed for {self.special_attack_cooldown} turns!")
+            return False
+        damage = target.max_health
+        target.health -= damage
+        self.max_health -= int(self.max_health*0.25)
+        self.health = min(self.health, self.max_health)
+        print(f"{self.name} uses Lich's Greed")
+        print(f"{target.name} is ERASED FROM EXISTENCE...but at some COST!")
+        print(f"{self.name} sacrificed a part of their life to erase the enemy's existence")
+        return True      
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
+        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1, special_attack_cooldown = 5, special_attack_cooldown_turn = 3, accuracy = 100)
+    def special_attack(self, target):
+        self.accuracy = random.randint(1,100)
+        if self.special_attack_cooldown>0:
+            print(f"{self.name} cannot use HOLLOW's BARGAIN for {self.special_attack_cooldown} turns!")
+            return False
+        if self.accuracy <= 75:
 
+         damage = random.randint(self.strong_min,self.strong_max)
+         damage *= self.crit_multiplier + 1
+         target.health -= damage
+         print(f"{self.name} used Hollow's Bargain")
+         print(f"{target.name} is HIT BY THE HOLLOWED ARROW!")
+         return True
+        else:
+         damage = random.randint(max(1, self.normal_min//2), max(1,self.normal_max//2)) 
+         target.health -= damage
+         print(f"{self.name} used HOLLOW's BARGAIN...but they MISSED")
+         print(f"THE HOLLOWED ARROW ONLY GRAZED THE {target.name}")
+         return True      
 def playerlevel_up(player):
     global saved_levels 
     player.level += 1
@@ -113,16 +155,25 @@ def bosslevel_up(boss):
 def battle(player, enemy):
         while player.health > 0 :
             print(f"\n{player.name}'s Health: {player.health} | {enemy.name}'s Health: {enemy.health}")
-            action = input("Choose your action (1: Normal Attack, 2: Strong Attack): ")
+            action = input("Choose your action (1: Normal Attack, 2: Strong Attack, 3: Special Attack): ")
             if action == '1':
                 player.normal_attack(enemy)
                 player.strong_attack_cooldown -= 1
+                player.special_attack_cooldown -= 1
             elif action == '2':
                 if  player.strong_attack_cooldown>0:
                     print(f"{player.name} cannot use strong attack this for {player.strong_attack_cooldown} turns!")
                     continue
                 elif player.strong_attack(enemy):
                     player.strong_attack_cooldown =1
+                    player.special_attack_cooldown -= 1
+            elif action == '3':
+                if player.special_attack_cooldown>0:
+                 print(f"{player.name} cannot use their SPECIAL ATTACK for {player.special_attack_cooldown} turns!")
+                 continue
+                elif player.special_attack(enemy):
+                    player.special_attack_cooldown = player.special_attack_cooldown_turn 
+                    player.strong_attack_cooldown -= 1           
             else:
                 print("Invalid action. Please choose again.")
                 continue            
@@ -134,7 +185,7 @@ def battle(player, enemy):
             enemy_action = random.choice(['normal', 'strong'])
             if enemy_action == 'strong' and enemy.strong_attack_cooldown==0:
                 enemy.strong_attack(player)
-
+                enemy.strong_attack_cooldown = 1 
             else:
                 enemy.normal_attack(player)
                 enemy.strong_attack_cooldown -= 1
