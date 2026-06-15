@@ -1,10 +1,9 @@
 import random
 class Character:
-    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1):
+    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0):
         self.name = name
         self.health = health
         self.max_health = max_health
-        self.used_strong_last_turn = False
         self.normal_min = normal_min
         self.normal_max = normal_max
         self.strong_min = strong_min
@@ -12,6 +11,9 @@ class Character:
         self.crit_chance = crit_chance
         self.crit_multiplier = crit_multiplier
         self.level = level
+        self.strong_attack_cooldown = strong_attack_cooldown
+        self.special_attack_cooldown = special_attack_cooldown
+
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
@@ -24,7 +26,7 @@ class Character:
               
 
     def strong_attack(self, target):
-        if self.used_strong_last_turn:
+        if self.strong_attack_cooldown>0:
             print(f"{self.name} cannot use strong attack this turn!")
             return False
         damage = random.randint(self.strong_min, self.strong_max)
@@ -33,7 +35,6 @@ class Character:
             damage *= self.crit_multiplier
             print(f"Critical hit!")
         target.health -= damage
-        self.used_strong_last_turn = True
         if damage < 0:
             print(f"{self.name} uses a strong attack on {target.name} but it heals them for {-damage} health!")
         else:
@@ -42,11 +43,11 @@ class Character:
         
 class Knight(Character):
      def __init__(self, name):
-        super().__init__(name, 120, 120, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
+        super().__init__(name, 140, 140, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
         
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 80, 80, normal_min=8, normal_max=15, strong_min=20, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
+        super().__init__(name, 100, 100, normal_min=10, normal_max=15, strong_min=25, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
         
 class Archer(Character):
     def __init__(self, name):
@@ -59,12 +60,12 @@ def playerlevel_up(player):
     if isinstance(player, Knight):
        player.max_health += 30
        player.health = player.max_health
-       player.normal_min += 1
-       player.normal_max += 1
-       player.strong_min += 3
-       player.strong_max += 3
+       player.normal_min += 2
+       player.normal_max += 2
+       player.strong_min += 5
+       player.strong_max += 5
     elif isinstance(player, Mage):
-       player.max_health += 10
+       player.max_health += 25
        player.health = player.max_health
        player.normal_min += 3
        player.normal_max += 3
@@ -115,14 +116,13 @@ def battle(player, enemy):
             action = input("Choose your action (1: Normal Attack, 2: Strong Attack): ")
             if action == '1':
                 player.normal_attack(enemy)
-                player.used_strong_last_turn = False
+                player.strong_attack_cooldown -= 1
             elif action == '2':
-                if  player.used_strong_last_turn == True:
-                    print(f"{player.name} cannot use strong attack this turn!")
+                if  player.strong_attack_cooldown>0:
+                    print(f"{player.name} cannot use strong attack this for {player.strong_attack_cooldown} turns!")
                     continue
                 elif player.strong_attack(enemy):
-                    player.used_strong_last_turn = True
-                    
+                    player.strong_attack_cooldown =1
             else:
                 print("Invalid action. Please choose again.")
                 continue            
@@ -132,12 +132,12 @@ def battle(player, enemy):
                 return True
 
             enemy_action = random.choice(['normal', 'strong'])
-            if enemy_action == 'strong' and not enemy.used_strong_last_turn == True:
+            if enemy_action == 'strong' and enemy.strong_attack_cooldown==0:
                 enemy.strong_attack(player)
 
             else:
                 enemy.normal_attack(player)
-                enemy.used_strong_last_turn = False
+                enemy.strong_attack_cooldown -= 1
 
         if player.health <= 0:
           print(f"{player.name} has been defeated! Game Over!")

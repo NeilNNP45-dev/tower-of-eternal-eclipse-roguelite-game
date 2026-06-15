@@ -1,11 +1,10 @@
 BOT_CLASS = "Knight"
 import random
 class Character:
-    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1):
+    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0):
         self.name = name
         self.health = health
         self.max_health = max_health
-        self.used_strong_last_turn = False
         self.normal_min = normal_min
         self.normal_max = normal_max
         self.strong_min = strong_min
@@ -13,6 +12,8 @@ class Character:
         self.crit_chance = crit_chance
         self.crit_multiplier = crit_multiplier
         self.level = level
+        self.strong_attack_cooldown = strong_attack_cooldown
+        self.special_attack_cooldown = special_attack_cooldown
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
@@ -23,7 +24,7 @@ class Character:
               
 
     def strong_attack(self, target):
-     if self.used_strong_last_turn:
+     if self.strong_attack_cooldown>0:
         return False
 
      damage = random.randint(self.strong_min, self.strong_max)
@@ -33,7 +34,7 @@ class Character:
         damage *= self.crit_multiplier
 
      target.health -= damage
-     self.used_strong_last_turn = True
+     self.strong_attack_cooldown = 1
      return True
     
 class Knight(Character):
