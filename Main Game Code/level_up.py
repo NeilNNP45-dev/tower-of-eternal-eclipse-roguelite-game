@@ -29,26 +29,26 @@ def playerlevel_up(player):
 
     print(f"{player.name} has leveled up to level {player.level}!") 
 
-def enemylevel_up(enemy, wins):
+def enemylevel_up(enemy, game_state):
     enemy.level += 1
-    enemy.max_health = int(enemy.max_health + wins* 5)
+    enemy.max_health = int(enemy.max_health + game_state.wins* 5)
     enemy.health = enemy.max_health
-    enemy.normal_min = int(enemy.normal_min + wins//3)
-    enemy.normal_max = int(enemy.normal_max + wins//2)
-    enemy.strong_min = int(enemy.strong_min + wins//3)
-    enemy.strong_max = int(enemy.strong_max + wins//2)
+    enemy.normal_min = int(enemy.normal_min + game_state.wins//3)
+    enemy.normal_max = int(enemy.normal_max + game_state.wins//2)
+    enemy.strong_min = int(enemy.strong_min + game_state.wins//3)
+    enemy.strong_max = int(enemy.strong_max + game_state.wins//2)
 
-def bosslevel_up(boss, wins, resets):
+def bosslevel_up(boss, game_state,):
     if boss.name == "THE LOST PROTECTOR":
-       boss.max_health += resets*25 + wins*2
+       boss.max_health += game_state.resets*25 + game_state.wins*2
        boss.health = boss.max_health
-       boss.strong_min -= resets*2 
-       boss.strong_max -= resets*2 
+       boss.strong_min -= game_state.resets*2 
+       boss.strong_max -= game_state.resets*2 
 
     elif boss.name == "THE LICH KING":
-       boss.max_health += resets*15 + wins*2
+       boss.max_health += game_state.resets*15 + game_state.wins*2
        boss.health = boss.max_health
     
     elif boss.name == "THE HOLLOW HUMAN":
-       boss.max_health += resets*20 + wins*2
+       boss.max_health += game_state.resets*20 + game_state.wins*2
        boss.health = boss.max_health

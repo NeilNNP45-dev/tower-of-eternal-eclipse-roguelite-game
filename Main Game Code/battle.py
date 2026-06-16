@@ -1,8 +1,8 @@
 import random
-def battle(player, enemy):
+def battle(player, enemy, game_):
         while player.health > 0 :
             print(f"\n{player.name}'s Health: {player.health} | {enemy.name}'s Health: {enemy.health}")
-            action = input("Choose your action (1: Normal Attack, 2: Strong Attack, 3: Special Attack): ")
+            action = input("Choose your action (1: Normal Attack, 2: Strong Attack, 3: Special Attack, S: Save and Quit ): ")
             if action == '1':
                 player.normal_attack(enemy)
                 player.strong_attack_cooldown -= 1
@@ -20,7 +20,10 @@ def battle(player, enemy):
                  continue
                 elif player.special_attack(enemy):
                     player.special_attack_cooldown = player.special_attack_cooldown_turn 
-                    player.strong_attack_cooldown -= 1           
+                    player.strong_attack_cooldown -= 1  
+            elif action.lower() == "s":
+                 print("Game Saved!")
+                 return "save_quit"    
             else:
                 print("Invalid action. Please choose again.")
                 continue            

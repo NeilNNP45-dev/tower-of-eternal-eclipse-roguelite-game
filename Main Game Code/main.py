@@ -3,56 +3,86 @@ from player import *
 from battle import battle
 from level_up import (playerlevel_up, enemylevel_up, bosslevel_up)   
 from world import environments, bosses
-
+from gamestate import GameState
+from save_system import save_game, load_game
 
 player_name = input("Enter your character's name: ")
-saved_levels = 0
-saved_exp = 0
-saved_exp_needed = 100
-resets = 0
+game_state = GameState()
+data = load_game()
+if data:
+ game_state.load_save(data)
+ print("Save Found")
+ print(game_state.saved_levels)
+ print(game_state.saved_exp)
+ print(game_state.saved_exp_needed)
+ print(game_state.wins)
+ print(game_state.resets)
+ print(game_state.saved_class)
+else:
+ print("No Save Found") 
+exp = 0
+exp_needed = 100
 while True:
  choices = input("Press A to Enter the Tower of Eternal Eclipse, Press Q to Quit): ")
  print("The Tower Remembers Your Previous Lives.......They weren't worthy enough")
- print(f"Current Life : {resets}")
+ print(f"Current Life : {game_state.resets}")
  print("Don't Lose Too Many Lives" )
- if choices.lower() == 'a':    
-      wins = 0         
-      exp =  saved_exp
-      exp_needed = saved_exp_needed  
-      env = random.choice(list(environments.keys()))
-      print(f"You find yourself in a {env}.")       
-      while True:      
-        classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
-        if classes == '1':
+ if choices.lower() == 'a':  
+       if game_state.saved_class:
+        classes = game_state.saved_class
+        print(f"Loaded Class: {classes}")
+        if classes == "Knight":
+         player = Knight(player_name)
+         for i in range(game_state.saved_levels-1):
+             playerlevel_up(player)    
+        elif classes == "Mage":
+         player = Mage(player_name)
+         for i in range(game_state.saved_levels-1):
+             playerlevel_up(player)    
+        elif classes == "Archer":
+         player = Archer(player_name)
+         for i in range(game_state.saved_levels-1):
+             playerlevel_up(player)    
+        print("DEBUG PLAYER CREATED")
+        pass
+       else:
+        while True:     
+         classes = input("Choose your class (1: Knight, 2: Mage, 3: Archer): ")
+         if classes == '1':
             player = Knight(player_name)
-            for i in range(saved_levels):
+            game_state.saved_class = "Knight"
+            for i in range(game_state.saved_levels-1):
              playerlevel_up(player)    
             break
-        elif classes == '2':
+         elif classes == '2':
             player = Mage(player_name)
-            for i in range(saved_levels):
+            game_state.saved_class = "Mage"
+            for i in range(game_state.saved_levels-1):
              playerlevel_up(player)
             break
-        elif classes == '3':
+         elif classes == '3':
             player = Archer(player_name)
-            for i in range(saved_levels):
+            game_state.saved_class = "Archer"
+            for i in range(game_state.saved_levels-1):
              playerlevel_up(player)
             break
-        else:
-            print("Invalid class choice. Please choose again.")
-        
-           
-
-      while True:
-       wins += 1
-       if wins > 1:
-        env = random.choice(list(environments.keys()))
-        boss_name = random.choice(list(bosses[env].keys()))
-        print(f"\nYou travel to the {env}.")
-       if player.health < 50:
-        print(f"\nYou take a moment to rest and recover some health.")
-        player.health += 30
-       if wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
+         else:
+          print("Invalid class choice. Please choose again.")
+       print("Before towwer loop")
+       env = random.choice(list(environments.keys()))
+       print(f"\nYou travel to the {env}.")
+       boss_name = random.choice(list(bosses[env].keys()))
+       while True:
+          print("DEBUG TOWER ENTERED" )
+          game_state.wins += 1
+          if game_state.wins > 1:
+           env = random.choice(list(environments.keys()))
+           boss_name = random.choice(list(bosses[env].keys()))
+           print(f"\nYou travel to the {env}.")
+          if player.health < 50:
+           print(f"\nYou take a moment to rest and recover some health.")
+           player.health += 30
+          if game_state.wins in [5, 10, 15, 20, 25, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80, 85, 90, 95]:
              print(f"\n--- BOSS ROOM ---")
              print("You Rest Before Going in and Heal to Max")
              player.health = player.max_health
@@ -67,14 +97,15 @@ while True:
                                 strong_max=bosses[env][boss_name]["strong_max"],
                                 crit_chance=bosses[env][boss_name]["crit_chance"],
                                 crit_multiplier=bosses[env][boss_name]["crit_multiplier"])
-             bosslevel_up(boss, wins, resets)
-             if not battle(player, boss):
-                 saved_exp_needed = exp_needed
-                 saved_levels = player.level-1
-                 saved_exp = exp
-                 resets += 1
+             bosslevel_up(boss, game_state)
+             if not battle(player, boss, game_state):
+                 game_state.saved_exp_needed = exp_needed
+                 game_state.saved_levels = player.level
+                 game_state.saved_exp = exp
+                 game_state.resets += 1
+                 game_state.wins = 0
                  break
-             exp += random.randint(400 + resets*5 , 600 + resets*5)
+             exp += random.randint(400 + game_state.resets*5 , 600 + game_state.resets*5)
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
@@ -83,7 +114,7 @@ while True:
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
-       elif wins == 50:
+          elif game_state.wins == 50:
              print(f"\n--- FINAL BOSS ---")
              print("You Rest Before Going in and Heal to Max")
              player.health = player.max_health
@@ -94,13 +125,14 @@ while True:
              print(f"\nThe Forgotten One leaves the field, but his shadow stays")
              print(f"\n---THE STRONGEST SHADOW BOSS FIGHT---")
              boss = Character("THE FORGOTTEN ONE(SHADOW FORM)", 500, 500, normal_min=50, normal_max=70, strong_min=100, strong_max=150, crit_chance=50, crit_multiplier=5)
-             if not battle(player, boss):
-                 saved_exp_needed = exp_needed
-                 saved_levels = player.level-1
-                 saved_exp = exp
-                 resets += 1
+             if not battle(player, boss, game_state):
+                 game_state.saved_exp_needed = exp_needed
+                 game_state.saved_levels = player.level
+                 game_state.saved_exp = exp
+                 game_state.resets += 1
+                 game_state.wins = 0
                  break
-             exp += random.randint(1000 + resets*5 , 1500 + resets*5)
+             exp += random.randint(1000 + game_state.resets*5 , 1500 + game_state.resets*5)
              while exp >= exp_needed:
                  playerlevel_up(player)
                  exp -= exp_needed
@@ -109,7 +141,7 @@ while True:
              print(f"\nYou rest and recover to full health.")
              player.health = player.max_health          
              continue           
-       elif wins == 100:
+          elif game_state.wins == 100:
                 print(f"\n--- FINAL BOSS ---")
                 print("You Rest Before Going in and Heal to Max")
                 player.health = player.max_health
@@ -119,13 +151,14 @@ while True:
                 print(f"\nThe Forgotten One says: 'You have proven yourself worthy, but can you defeat me?'")
                 print(f"\n---THE FORGOTTEN ONE BOSS FIGHT---")
                 boss = Character("THE FORGOTTEN ONE", 1000, 1000, normal_min=70, normal_max=100, strong_min=150, strong_max=250, crit_chance=75, crit_multiplier=5)
-                if not battle(player, boss):
-                 saved_exp_needed = exp_needed
-                 saved_levels = player.level-1
-                 saved_exp = exp
-                 resets += 1
+                if not battle(player, boss, game_state):
+                 game_state.saved_exp_needed = exp_needed
+                 game_state.saved_levels = player.level
+                 game_state.saved_exp = exp
+                 game_state.resets += 1
+                 game_state.wins = 0
                  break
-                exp += random.randint(2500 + resets*5 , 3000 + resets*5)
+                exp += random.randint(2500 + game_state.resets*5 , 3000 + game_state.resets*5)
                 while exp >= exp_needed:
                     playerlevel_up(player)
                     exp -= exp_needed
@@ -133,33 +166,44 @@ while True:
                 print(f"\nYou rest and recover to full health.")
                 player.health = player.max_health
                 continue
-       else:               
+          else:               
     
-        print(f"\n--- Battle {wins} ---")
-        print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
-        enemy_name = random.choice(list(environments[env].keys()))
-        enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, wins + random.randint(-1, 1)))
-        enemylevel_up(enemy, wins)
-        print(f"\nA wild level {enemy.level} {enemy.name} appears!")
-        if not battle(player, enemy):
-         saved_exp_needed = exp_needed
-         saved_levels = player.level-1
-         saved_exp = exp
-         resets += 1
-         break
+            print(f"\n--- Battle {game_state.wins} ---")
+            print(f"Current Level: {player.level} | EXP: {exp}/{exp_needed}")
+            enemy_name = random.choice(list(environments[env].keys()))
+            enemy = Character(enemy_name, environments[env][enemy_name], environments[env][enemy_name], level = max(1, game_state.wins + random.randint(-1, 1)))
+            enemylevel_up(enemy, game_state)
+            print(f"\nA wild level {enemy.level} {enemy.name} appears!")
+            battle_result = battle(player, enemy, game_state)
+            if battle_result == "save_quit":
+             game_state.saved_levels = player.level
+             game_state.saved_exp = exp
+             game_state.saved_exp_needed = exp_needed
+             game_state.saved_class = classes
+             save_game(game_state)
+             print("Game Saved!")
+             break
+            if battle_result == False:
+             game_state.saved_exp_needed = exp_needed
+             game_state.saved_levels = player.level
+             game_state.saved_exp = exp
+             game_state.resets += 1
+             game_state.wins = 0
+             break
 
-        exp += random.randint(100 + resets*5 , 150 + resets*5)
-        while exp >= exp_needed:
-            playerlevel_up(player)
-            exp -= exp_needed
-            exp_needed = int(exp_needed*1.3)
+            exp += random.randint(100 + game_state.resets*5 , 150 + game_state.resets*5)
+            while exp >= exp_needed:
+             playerlevel_up(player)
+             exp -= exp_needed
+             exp_needed = int(exp_needed*1.3)
             
-        if player.health <= 0:
-          saved_exp_needed = exp_needed
-          saved_exp = exp
-          break
+            if player.health <= 0:
+             game_state.saved_exp_needed = exp_needed
+             game_state.saved_exp = exp
+             break
 
  elif choices.lower() == 'q':
+        save_game(game_state)
         print("Thanks for playing!")
         break
  else:
