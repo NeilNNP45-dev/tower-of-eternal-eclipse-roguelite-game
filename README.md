@@ -28,6 +28,17 @@ Grow stronger as you ascend deeper into the tower by improving your character's 
 
 Scaling difficulty and strategic decision-making encourage players to adapt and improve with every run.
 
+### 🧪 Automated Testing & Balancing
+
+To help balance the game without having to manually play through it thousands of times, I built a separate tool called "TestingAutoBot.py".
+
+This script runs automated battle simulations, allowing me to quickly test gameplay changes and gather data on:
+
+- Class Balance – Checking whether a class is significantly stronger or weaker than intended.
+- Boss Difficulty – Ensuring bosses scale appropriately and provide a meaningful challenge.
+
+By combining these automated simulations with manual playtesting, I can fine-tune combat balance while preserving each class's unique strengths, weaknesses, and playstyle.
+
 ---
 
 ## 🚧 Development Status
