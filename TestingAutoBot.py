@@ -1,7 +1,7 @@
-BOT_CLASS = "Knight"
+BOT_CLASS = "Mage"
 import random
 class Character:
-    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0):
+    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0, special_attack_cooldown_turn = 0, accuracy = 100):
         self.name = name
         self.health = health
         self.max_health = max_health
@@ -14,6 +14,8 @@ class Character:
         self.level = level
         self.strong_attack_cooldown = strong_attack_cooldown
         self.special_attack_cooldown = special_attack_cooldown
+        self.special_attack_cooldown_turn = special_attack_cooldown_turn
+        self.accuracy = accuracy
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
@@ -21,34 +23,61 @@ class Character:
         if crit <= self.crit_chance:
             damage *= self.crit_multiplier
         target.health -= damage
-              
+        
 
     def strong_attack(self, target):
-     if self.strong_attack_cooldown>0:
-        return False
+        if self.strong_attack_cooldown>0:
+            return False
+        damage = random.randint(self.strong_min, self.strong_max)
+        crit = random.uniform(1, 100)
+        if crit <= self.crit_chance:
+            damage *= self.crit_multiplier
+        target.health -= damage
+         
 
-     damage = random.randint(self.strong_min, self.strong_max)
-
-     crit = random.uniform(1, 100)
-     if crit <= self.crit_chance:
-        damage *= self.crit_multiplier
-
-     target.health -= damage
-     self.strong_attack_cooldown = 1
-     return True
-    
 class Knight(Character):
-     def __init__(self, name):
-        super().__init__(name, 140, 140, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1)
-        
+    def __init__(self, name):
+        super().__init__(name, 140, 140, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance=20, crit_multiplier=3, level=1, special_attack_cooldown = 5, special_attack_cooldown_turn = 5, accuracy = 100)
+    def special_attack(self, target):
+        if self.special_attack_cooldown>0:
+            return False
+        damage = random.randint(self.strong_min + 15, self.strong_max + 15)
+        target.health -= damage
+        self.health += 25
+        self.health = min(self.health, self.max_health)
+        return True  
+            
 class Mage(Character):
     def __init__(self, name):     
-        super().__init__(name, 100, 100, normal_min=10, normal_max=15, strong_min=25, strong_max=35, crit_chance=5, crit_multiplier=5, level=1)
-        
+        super().__init__(name, 100, 100, normal_min=10, normal_max=15, strong_min=25, strong_max=35, crit_chance=5, crit_multiplier=5, level=1, special_attack_cooldown = 5, special_attack_cooldown_turn = 10, accuracy = 100)
+    def special_attack(self, target):
+        if self.special_attack_cooldown>0:
+            
+            return False
+        damage = target.max_health
+        target.health -= damage
+        self.max_health -= int(self.max_health*0.25)
+        self.health = min(self.health, self.max_health)
+        return True      
 class Archer(Character):
     def __init__(self, name):
-        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1)
+        super().__init__(name, 100, 100, normal_min=7, normal_max=12, strong_min=18, strong_max=28, crit_chance=30, crit_multiplier=4, level=1, special_attack_cooldown = 5, special_attack_cooldown_turn = 3, accuracy = 100)
+    def special_attack(self, target):
+        self.accuracy = random.randint(1,100)
+        if self.special_attack_cooldown>0:
+        
+            return False
+        if self.accuracy <= 75:
 
+         damage = random.randint(self.strong_min,self.strong_max)
+         damage *= self.crit_multiplier + 1
+         target.health -= damage
+         return True
+        else:
+         damage = random.randint(max(1, self.normal_min//2), max(1,self.normal_max//2)) 
+         target.health -= damage
+         return True
+      
 def playerlevel_up(player):
     global saved_levels 
     player.level += 1
@@ -82,12 +111,12 @@ def playerlevel_up(player):
 
 def enemylevel_up(enemy):
     enemy.level += 1
-    enemy.max_health = int(enemy.max_health + wins* 10)
+    enemy.max_health = int(enemy.max_health + wins* 5)
     enemy.health = enemy.max_health
-    enemy.normal_min = int(enemy.normal_min + wins * 0.5)
-    enemy.normal_max = int(enemy.normal_max + wins * 1.5)
-    enemy.strong_min = int(enemy.strong_min + wins * 0.5)
-    enemy.strong_max = int(enemy.strong_max + wins * 1.5)
+    enemy.normal_min = int(enemy.normal_min + wins//3)
+    enemy.normal_max = int(enemy.normal_max + wins//2)
+    enemy.strong_min = int(enemy.strong_min + wins//3)
+    enemy.strong_max = int(enemy.strong_max + wins//2)
 
 def bosslevel_up(boss):
     if boss.name == "THE LOST PROTECTOR":
@@ -106,27 +135,92 @@ def bosslevel_up(boss):
        
 
 def auto_battle(player, enemy):
+
     while player.health > 0:
 
-        if not player.used_strong_last_turn:
-            player.strong_attack(enemy)
+        # KNIGHT
+        if isinstance(player, Knight):
+
+            if player.special_attack_cooldown <= 0:
+                player.special_attack(enemy)
+                player.special_attack_cooldown = (
+                    player.special_attack_cooldown_turn
+                )
+                player.strong_attack_cooldown -= 1
+
+            elif player.strong_attack_cooldown <= 0:
+                player.strong_attack(enemy)
+                player.strong_attack_cooldown = 1
+                player.special_attack_cooldown -= 1
+
+            else:
+                player.normal_attack(enemy)
+                player.strong_attack_cooldown -= 1
+                player.special_attack_cooldown -= 1
+
+        # MAGE
+        elif isinstance(player, Mage):
+
+            if (
+                enemy.max_health >= 425
+                and player.special_attack_cooldown <= 0
+            ):
+                player.special_attack(enemy)
+                player.special_attack_cooldown = (
+                    player.special_attack_cooldown_turn
+                )
+                player.strong_attack_cooldown -= 1
+
+            elif player.strong_attack_cooldown <= 0:
+                player.strong_attack(enemy)
+                player.strong_attack_cooldown = 1
+                player.special_attack_cooldown -= 1
+
+            else:
+                player.normal_attack(enemy)
+                player.strong_attack_cooldown -= 1
+                player.special_attack_cooldown -= 1
+
+        # ARCHER
         else:
-            player.normal_attack(enemy)
-            player.used_strong_last_turn = False
+
+            if player.special_attack_cooldown <= 0:
+                player.special_attack(enemy)
+                player.special_attack_cooldown = (
+                    player.special_attack_cooldown_turn
+                )
+                player.strong_attack_cooldown -= 1
+
+            elif player.strong_attack_cooldown <= 0:
+                player.strong_attack(enemy)
+                player.strong_attack_cooldown = 1
+                player.special_attack_cooldown -= 1
+
+            else:
+                player.normal_attack(enemy)
+                player.strong_attack_cooldown -= 1
+                player.special_attack_cooldown -= 1
 
         if enemy.health <= 0:
             return True
 
-        enemy_action = random.choice(['normal', 'strong'])
+        enemy_action = random.choice(
+            ["normal", "strong"]
+        )
 
-        if enemy_action == 'strong' and not enemy.used_strong_last_turn:
+        if (
+            enemy_action == "strong"
+            and enemy.strong_attack_cooldown <= 0
+        ):
             enemy.strong_attack(player)
+            enemy.strong_attack_cooldown = 1
+
         else:
             enemy.normal_attack(player)
-            enemy.used_strong_last_turn = False
-        if player.health <=0:
-            return False
+            enemy.strong_attack_cooldown -= 1
 
+        if player.health <= 0:
+            return False
 environments = {
     "The Forest of THE LOST ONES": {"Slime": 60, "Wolf": 100, "Bandits": 80},
     "The Dungeon of THE DEAD": {"Zombie": 60, "Orc": 120, "Skeleton": 80},
@@ -184,7 +278,7 @@ while True:
 
       while True:
        wins += 1
-       if wins >= 50:
+       if wins >= 51:
         print("\n===== SUCCESS =====")
         print(f"Class: {BOT_CLASS}")
         print(f"Resets: {resets}")
