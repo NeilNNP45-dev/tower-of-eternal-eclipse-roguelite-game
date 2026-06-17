@@ -38,7 +38,7 @@ This script runs automated battle simulations, allowing me to quickly test gamep
 - Boss Difficulty – Ensuring bosses scale appropriately and provide a meaningful challenge.
 
 By combining these automated simulations with manual playtesting, I can fine-tune combat balance while preserving each class's unique strengths, weaknesses, and playstyle.
-
+ 
 ---
 
 ## 🚧 Development Status
@@ -52,10 +52,10 @@ Tower of Eternal Eclipse is currently in active development.
 * Boss encounters
 * Character progression
 * Dungeon progression
+* Save and Load System using json
 
 ### Planned Systems
 
-* Save and load functionality
 * Loot and equipment systems
 * Additional classes
 * More bosses and enemy types
