@@ -28,6 +28,10 @@ Grow stronger as you ascend deeper into the tower by improving your character's 
 
 Scaling difficulty and strategic decision-making encourage players to adapt and improve with every run.
 
+### 💾 Save and Load using json
+Integrated a save and load option. Now the player can save the gamestate whenever they want.
+The game is also saved automatically whenever the player quits the game.
+
 ### 🧪 Automated Testing & Balancing
 
 To help balance the game without having to manually play through it thousands of times, I built a separate tool called "TestingAutoBot.py".
