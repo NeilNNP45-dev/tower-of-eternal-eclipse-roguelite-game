@@ -1,7 +1,7 @@
 import random
-def battle(player, enemy, game_):
+def battle(player, enemy, game_state):
         while player.health > 0 :
-            print(f"\n{player.name}'s Health: {player.health} | {enemy.name}'s Health: {enemy.health}")
+            print(f"\n{player.name}'s Health: {player.health}/{player.max_health} | {enemy.name}'s Health: {enemy.health}/{enemy.max_health}")
             action = input("Choose your action (1: Normal Attack, 2: Strong Attack, 3: Special Attack, S: Save and Quit ): ")
             if action == '1':
                 player.normal_attack(enemy)

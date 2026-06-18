@@ -6,7 +6,6 @@ class GameState:
         self.wins = 0
         self.resets =  0
         self.saved_class = None
-
     def load_save(self, data):
         self.saved_levels = data["saved_levels"]
         self.saved_exp = data["saved_exp"]
