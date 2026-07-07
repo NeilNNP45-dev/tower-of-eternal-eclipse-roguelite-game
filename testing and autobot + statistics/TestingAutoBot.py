@@ -1,5 +1,6 @@
-BOT_CLASS = "Knight"
+BOT_CLASS = "Mage"
 import random
+from statistics import save_run
 class Character:
     def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0, special_attack_cooldown_turn = 0, accuracy = 100,crit_data = 0, miss_data = 0,special_data = 0,normal_data = 0,strong_data = 0):
         self.name = name
@@ -293,30 +294,24 @@ while True:
 
       while True:
        wins += 1
-       if wins >= 101:
-        print("\n===== SUCCESS =====")
-        print(f"Class: {BOT_CLASS}")
-        print(f"Resets: {resets}")
-        print(f"Level: {player.level}")
-        print(f"number of crits = {player.crit_data}")
-        print(f"number of misses = {player.miss_data}")
-        print(f"Normal attack used {player.normal_data} times")
-        print(f"Strong attack used {player.strong_data} times")
-        print(f"Special attack used {player.special_data} times")
-        total_attacks = player.normal_data+player.strong_data+player.special_data
-        total_nsattacks = player.normal_data+player.strong_data
-        crit_percent = ((player.crit_data/total_nsattacks)*100)
-        print(f"Total attack used {total_attacks} times")
-        print(f"Total attack (non special) used {total_nsattacks} times")
-        print(f"crit percentage = {crit_percent:1f}%")
+       if wins >= 51:
+        run_data = {
+    "class": BOT_CLASS,
+    "resets": resets,
+    "level": player.level,
+    "floor": wins,
+    "crits": player.crit_data,
+    "misses": player.miss_data,
+    "normal_attacks": player.normal_data,
+    "strong_attacks": player.strong_data,
+    "special_attacks": player.special_data,
+    "exp": exp
+}        
+        save_run(run_data)
         quit()
+       
 
        if wins > 1:
-        if wins % 25 == 0:
-         print(
-         f"Floor {wins} | "
-         f"Level {player.level} | "
-         f"Resets {resets}")
         env = random.choice(list(environments.keys()))
         boss_name = random.choice(list(bosses[env].keys()))
        if player.health < 50:
