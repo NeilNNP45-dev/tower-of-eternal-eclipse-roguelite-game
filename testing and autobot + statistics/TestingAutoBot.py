@@ -1,7 +1,7 @@
-BOT_CLASS = "Mage"
+BOT_CLASS = "Knight"
 import random
 class Character:
-    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0, special_attack_cooldown_turn = 0, accuracy = 100):
+    def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0, special_attack_cooldown_turn = 0, accuracy = 100,crit_data = 0, miss_data = 0,special_data = 0,normal_data = 0,strong_data = 0):
         self.name = name
         self.health = health
         self.max_health = max_health
@@ -16,12 +16,20 @@ class Character:
         self.special_attack_cooldown = special_attack_cooldown
         self.special_attack_cooldown_turn = special_attack_cooldown_turn
         self.accuracy = accuracy
+        self.crit_data = crit_data
+        self.miss_data = miss_data
+        self.special_data = special_data
+        self.normal_data = normal_data
+        self.strong_data = strong_data
 
     def normal_attack(self, target):
         damage = random.randint(self.normal_min, self.normal_max)
         crit = random.uniform(1, 100)
+        player.normal_data +=1
         if crit <= self.crit_chance:
-            damage *= self.crit_multiplier
+             player.crit_data += 1
+             
+             damage *= self.crit_multiplier
         target.health -= damage
         
 
@@ -30,8 +38,10 @@ class Character:
             return False
         damage = random.randint(self.strong_min, self.strong_max)
         crit = random.uniform(1, 100)
+        player.strong_data += 1
         if crit <= self.crit_chance:
-            damage *= self.crit_multiplier
+             player.crit_data += 1
+             damage *= self.crit_multiplier
         target.health -= damage
          
 
@@ -45,6 +55,7 @@ class Knight(Character):
         target.health -= damage
         self.health += 25
         self.health = min(self.health, self.max_health)
+        player.special_data +=1
         return True  
             
 class Mage(Character):
@@ -58,6 +69,7 @@ class Mage(Character):
         target.health -= damage
         self.max_health -= int(self.max_health*0.25)
         self.health = min(self.health, self.max_health)
+        player.special_data +=1
         return True      
 class Archer(Character):
     def __init__(self, name):
@@ -72,10 +84,13 @@ class Archer(Character):
          damage = random.randint(self.strong_min,self.strong_max)
          damage *= self.crit_multiplier + 1
          target.health -= damage
+         player.special_data +=1
          return True
         else:
          damage = random.randint(max(1, self.normal_min//2), max(1,self.normal_max//2)) 
+         player.miss_data += 1
          target.health -= damage
+         player.special_data +=1
          return True
       
 def playerlevel_up(player):
@@ -162,7 +177,7 @@ def auto_battle(player, enemy):
         elif isinstance(player, Mage):
 
             if (
-                enemy.max_health >= 425
+                enemy.max_health >= 1000
                 and player.special_attack_cooldown <= 0
             ):
                 player.special_attack(enemy)
@@ -278,15 +293,26 @@ while True:
 
       while True:
        wins += 1
-       if wins >= 51:
+       if wins >= 101:
         print("\n===== SUCCESS =====")
         print(f"Class: {BOT_CLASS}")
         print(f"Resets: {resets}")
         print(f"Level: {player.level}")
+        print(f"number of crits = {player.crit_data}")
+        print(f"number of misses = {player.miss_data}")
+        print(f"Normal attack used {player.normal_data} times")
+        print(f"Strong attack used {player.strong_data} times")
+        print(f"Special attack used {player.special_data} times")
+        total_attacks = player.normal_data+player.strong_data+player.special_data
+        total_nsattacks = player.normal_data+player.strong_data
+        crit_percent = ((player.crit_data/total_nsattacks)*100)
+        print(f"Total attack used {total_attacks} times")
+        print(f"Total attack (non special) used {total_nsattacks} times")
+        print(f"crit percentage = {crit_percent:1f}%")
         quit()
 
        if wins > 1:
-        if wins % 5 == 0:
+        if wins % 25 == 0:
          print(
          f"Floor {wins} | "
          f"Level {player.level} | "
@@ -374,5 +400,4 @@ while True:
           saved_exp_needed = exp_needed
           saved_exp = exp
           break
-
- 
+        
