@@ -113,5 +113,3 @@ def generate_report():
 
         report.write(f"Total Misses         : {total_misses}\n")
         report.write(f"Special Miss Rate    : {miss_percent:.2f}%\n")
-generate_report()
-print("Report generated successfully!")

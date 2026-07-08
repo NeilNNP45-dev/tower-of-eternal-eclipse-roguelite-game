@@ -1,6 +1,7 @@
-BOT_CLASS = "Mage"
+BOT_CLASS = "Archer"
 import random
 from statistics import save_run
+from reports import generate_report
 class Character:
     def __init__(self, name, health, max_health, normal_min=5, normal_max=10, strong_min=15, strong_max=25, crit_chance = 10, crit_multiplier = 2, level = 1, strong_attack_cooldown = 0, special_attack_cooldown = 0, special_attack_cooldown_turn = 0, accuracy = 100,crit_data = 0, miss_data = 0,special_data = 0,normal_data = 0,strong_data = 0):
         self.name = name
@@ -45,6 +46,7 @@ class Character:
              damage *= self.crit_multiplier
         target.health -= damage
          
+sim_number =  int(input("Enter Number of Simulations: "))         
 
 class Knight(Character):
     def __init__(self, name):
@@ -306,8 +308,12 @@ while True:
     "strong_attacks": player.strong_data,
     "special_attacks": player.special_data,
     "exp": exp
-}        
-        save_run(run_data)
+}            
+        while sim_number>= 1:
+         save_run(run_data)
+         sim_number -= 1
+         generate_report()
+        print("Report generated successfully!") 
         quit()
        
 
