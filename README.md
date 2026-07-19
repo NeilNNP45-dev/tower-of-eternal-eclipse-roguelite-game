@@ -148,7 +148,7 @@ Future goals include developing Luna into an AI balancing companion capable of p
 ---
 
 📁 Project Structure
-
+```text
 Tower_of_Eternal_Eclipse/
 │
 ├── main.py
@@ -173,23 +173,23 @@ Tower_of_Eternal_Eclipse/
 ├── data/
 ├── save.json
 └── README.md
-
+```
 ---
 
 🚀 Getting Started
 
 Clone the repository:
-
+```
 git clone https://github.com/NeilNNP45-dev/tower-of-eternal-eclipse-roguelite-game.git
-
+```
 Navigate into the project:
-
+```
 cd Tower-of-Eternal-Eclipse
-
+```
 Run the game:
-
+```
 python main.py
-
+```
 ---
 
 🎮 Current Version
