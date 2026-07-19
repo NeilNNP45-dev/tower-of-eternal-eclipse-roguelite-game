@@ -1,0 +1,41 @@
+===== TOWER OF ETERNAL ECLIPSE =====
+========== AUTOBOT REPORT ==========
+
+Total Simulations : 1024
+
+----- Average Statistics -----
+Average Resets : 2.77
+Average Level  : 17.93
+Average Floor  : 51.00
+Average EXP    : 4057.24
+
+----- Best Results -----
+Highest Floor : 51
+Highest Level : 18
+Lowest Resets : 2
+
+----- Combat Statistics -----
+Total Attacks        : 111271
+Normal Attacks       : 28388
+Strong Attacks       : 55879
+Special Attacks      : 27004
+
+Normal Attack Usage  : 25.51%
+Strong Attack Usage  : 50.22%
+Special Attack Usage : 24.27%
+
+Total Crits          : 32215
+Critical Hit Rate    : 38.23%
+
+Total Misses         : 6531
+Special Miss Rate    : 24.19%
+
+----- Battle Statistics -----
+Average Battle Turns      : 2.29
+Longest Battle            : 2
+
+Average Damage Dealt      : 16406.02
+Average Damage Taken      : 1830.46
+
+Highest Damage Dealt      : 18628
+Highest Damage Taken      : 1996

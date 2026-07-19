@@ -470,8 +470,25 @@ def run_simulation():
                 "exp": exp
             }            
             return run_data
+from pathlib import Path
 
+BASE_DIR = Path(__file__).parent
+
+FILES_TO_CLEAR = [
+    BASE_DIR / "statistics.json",
+    BASE_DIR / "training_data.csv",
+    BASE_DIR / "report.txt"
+]
+
+for file in FILES_TO_CLEAR:
+    if file.exists():
+        file.unlink()
 def main():
+    # Delete old files
+    for file in FILES_TO_CLEAR:
+        if file.exists():
+            file.unlink()
+
     sim_number = int(input("Enter Number of Simulations: "))
     start_time = time.perf_counter()
 
@@ -479,10 +496,12 @@ def main():
         run_data = run_simulation()
         if run_data:
             save_run(run_data)
+
     generate_report()
     export_csv()
 
     end_time = time.perf_counter()
+
     print("Report generated successfully!")
     print(f"Execution Time: {end_time - start_time:.2f} seconds")     
 

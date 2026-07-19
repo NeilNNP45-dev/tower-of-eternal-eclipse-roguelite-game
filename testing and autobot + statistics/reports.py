@@ -1,8 +1,10 @@
 import json
+from pathlib import Path
 
-STATS_FILE = "statistics.json"
-REPORT_FILE = "report.txt"
+BASE_DIR = Path(__file__).parent
 
+STATS_FILE = BASE_DIR / "statistics.json"
+REPORT_FILE = BASE_DIR / "report.txt"
 
 def generate_report():
     try:

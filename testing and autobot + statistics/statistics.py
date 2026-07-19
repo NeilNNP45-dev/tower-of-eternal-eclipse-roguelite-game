@@ -1,11 +1,13 @@
 import json
+from pathlib import Path
 
-FILE_NAME = "statistics.json"
+BASE_DIR = Path(__file__).parent
+STATS_FILE = BASE_DIR / "statistics.json"
 
 
 def save_run(run_data):
     try:
-        with open(FILE_NAME, "r") as file:
+        with open(STATS_FILE, "r") as file:
             data = json.load(file)
 
     except (FileNotFoundError, json.JSONDecodeError):
@@ -13,5 +15,5 @@ def save_run(run_data):
 
     data.append(run_data)
 
-    with open(FILE_NAME, "w") as file:
+    with open(STATS_FILE, "w") as file:
         json.dump(data, file, indent=4)

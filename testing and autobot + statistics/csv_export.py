@@ -1,8 +1,11 @@
 import json
 import csv
+from pathlib import Path
 
-STATS_FILE = "statistics.json"
-CSV_FILE = "training_data.csv"
+BASE_DIR = Path(__file__).parent
+
+STATS_FILE = BASE_DIR / "statistics.json"
+CSV_FILE = BASE_DIR / "training_data.csv"
 
 
 def export_csv():
@@ -40,11 +43,9 @@ def export_csv():
         ])
 
         for run in runs:
-
             deaths = len(run["death floor"])
 
             for i in range(deaths):
-
                 writer.writerow([
                     run["class"],
                     run["death floor"][i],
@@ -67,3 +68,7 @@ def export_csv():
                 ])
 
     print(f"CSV exported successfully to '{CSV_FILE}'")
+
+
+if __name__ == "__main__":
+    export_csv()
